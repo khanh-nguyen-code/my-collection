@@ -17,7 +17,8 @@ class Context:
     __now: time.struct_time
     __kv_list: list[tuple[str, Any]]
 
-    def __init__(self, info_writer: Writer, error_writer: Writer, now: time.struct_time, kv_list: list[tuple[str, Any]]):
+    def __init__(self, info_writer: Writer, error_writer: Writer, now: time.struct_time,
+                 kv_list: list[tuple[str, Any]]):
         self.__info_writer = info_writer
         self.__error_writer = error_writer
         self.__now = now
@@ -38,12 +39,9 @@ class Context:
         )
 
     def __to_log(self, msg: str) -> str:
-        out = f"{self.__now.tm_year}/{self.__now.tm_mon}/{self.__now.tm_mday} {self.__now.tm_hour}:{self.__now.tm_min}:{self.__now.tm_sec}"
-        out += "|"
-        for key, val in self.__kv_list:
-            out += f"{key}={val}" + "|"
-        out += msg
-        return out
+        time_str = time.strftime('%Y/%m/%d %H:%M:%S', self.__now)
+        field_str_list = [f"{key}={val}" for key, val in self.__kv_list]
+        return "|".join([time_str, *field_str_list, msg])
 
 
 class Logger:
