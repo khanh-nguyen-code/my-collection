@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 import inspect
+import sys
 import time
 from typing import Any, Callable
 
 Writer = Callable[[str, ], None]
 
 
-def print_writer(msg: str):
-    print(msg)
+def stdout_writer(msg: str):
+    print(msg, file=sys.stdout)
+
+
+def stderr_writer(msg: str):
+    print(msg, file=sys.stderr)
 
 
 class Context:
@@ -48,7 +53,7 @@ class Logger:
     __info_writer: Writer
     __error_writer: Writer
 
-    def __init__(self, info_writer: Writer = print_writer, error_writer: Writer = print_writer):
+    def __init__(self, info_writer: Writer = stdout_writer, error_writer: Writer = stderr_writer):
         self.__info_writer = info_writer
         self.__error_writer = error_writer
 
