@@ -9,11 +9,11 @@ Writer = Callable[[str, ], None]
 
 
 def stdout_writer(msg: str):
-    print(msg, file=sys.stdout)
+    print(msg, file=sys.stdout, end="")
 
 
 def stderr_writer(msg: str):
-    print(msg, file=sys.stderr)
+    print(msg, file=sys.stderr, end="")
 
 
 class Context:
@@ -46,6 +46,8 @@ class Context:
     def __to_log(self, msg: str) -> str:
         time_str = time.strftime('%Y/%m/%d %H:%M:%S', self.__now)
         field_str_list = [f"{key}={val}" for key, val in self.__kv_list]
+        if not msg.endswith("\n"):
+            msg += "\n"
         return "|".join([time_str, *field_str_list, msg])
 
 
