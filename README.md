@@ -14,6 +14,14 @@ pip install --upgrade my-collection
 
 fast key value storage in file
 
+## ddb
+
+distributed key value storage with map filter reduce
+
+## http
+
+http server based on fastapi
+
 ## logger
 
 logger
