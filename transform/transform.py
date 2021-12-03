@@ -17,6 +17,7 @@ class Transform:
                 return self.handler(arg.handler(i))
 
             return Transform(handler=helper)
+        raise Exception("type")
 
     def __mul__(self, other: Transform) -> Transform:
         return self(other)
