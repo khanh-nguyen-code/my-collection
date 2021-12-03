@@ -16,4 +16,3 @@ class Context:
             return func
 
         return helper
-

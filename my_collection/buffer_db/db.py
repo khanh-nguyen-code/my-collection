@@ -3,8 +3,8 @@ from __future__ import annotations
 import os
 from typing import BinaryIO, Union, Set
 
-from .model import Config, Metadata, Block, Key, BlockInfo, Stats
 from .io import IO
+from .model import Config, Metadata, Block, Key, BlockInfo, Stats
 from ..logger import logger
 
 
