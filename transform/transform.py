@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Callable, Any, Union
+from typing import Iterable, Callable, Any
 
 
 class Transform:
