@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from functools import reduce
-from typing import Iterable, Callable, Any, List
+from typing import Iterable, Callable, Any, Union
 
 
 class Transform:
@@ -10,14 +9,17 @@ class Transform:
     def __init__(self, handler: Callable[[Iterable], Iterable]):
         self.handler = handler
 
-    def __call__(self, i: Iterable) -> Iterable:
-        return self.handler(i)
+    def __call__(self, arg: Union[Iterable, Transform]) -> Union[Iterable, Transform]:
+        if isinstance(arg, Iterable):
+            return self.handler(arg)
+        if isinstance(arg, Transform):
+            def helper(i: Iterable) -> Iterable:
+                return self.handler(arg.handler(i))
 
-    def __add__(self, other: Transform) -> Transform:
-        def helper(i: Iterable) -> Iterable:
-            return other.handler(self.handler(i))
+            return Transform(handler=helper)
 
-        return Transform(handler=helper)
+    def __mul__(self, other: Transform) -> Transform:
+        return self(other)
 
 
 def flat_map(handler: Callable[[Any], Iterable]) -> Transform:
@@ -63,9 +65,11 @@ if __name__ == "__main__":
     def m3(item: Any) -> Any:
         return item - 1
 
+
     n = 1000
     s1 = reduce(lambda x, y: x + y, (m1 + m2 + m3)(range(n)))
     import numpy as np
+
     a = np.arange(0, n, 2)
     s2 = (a * a).sum() - a.sum()
-    print(s2-s1)
+    print(s2 - s1)
