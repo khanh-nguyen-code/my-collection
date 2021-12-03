@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import BinaryIO, Union, Set
+from typing import BinaryIO, Union, Set, Optional
 
 from .io import IO
 from .model import Config, Metadata, Block, Key, BlockInfo, Stats
@@ -146,9 +146,9 @@ class Context:
 
         logger.now().info(f"write key {key}, written blocks {block_list}")
 
-    def read(self, key: Key) -> bytes:
+    def read(self, key: Key) -> Optional[bytes]:
         if key not in self.meta.block_map:
-            return b""
+            return None
         block_list = self.meta.block_map[key].block_list
         value = b""
         for block in block_list:

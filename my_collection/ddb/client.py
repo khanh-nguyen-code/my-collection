@@ -1,5 +1,5 @@
 import base64
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
 import dill
 import fastapi
@@ -14,19 +14,19 @@ class Client:
     def __init__(self, addr: Addr):
         self.addr = addr
 
-    def get(self, path: str, key: str) -> str:
-        r = requests.get(f"http://{self.addr.host}:{self.addr.port}/data/{path}?key={key}")
+    def get(self, path: str, key: str) -> Any:
+        r = requests.get(f"http://{self.addr.host}:{self.addr.port}/query/{path}?key={key}")
         if r.status_code != 200:
             raise fastapi.HTTPException(status_code=r.status_code, detail=r.text)
-        return str(r.json())
+        return r.json()
 
-    def post(self, path: str, key: str, val: str):
-        r = requests.post(f"http://{self.addr.host}:{self.addr.port}/data/{path}?key={key}", json=val)
+    def post(self, path: str, key: str, val: Any):
+        r = requests.post(f"http://{self.addr.host}:{self.addr.port}/query/{path}?key={key}", json=val)
         if r.status_code != 200:
             raise fastapi.HTTPException(status_code=r.status_code, detail=r.text)
 
     def delete(self, path: str, key: str):
-        r = requests.delete(f"http://{self.addr.host}:{self.addr.port}/data/{path}?key={key}")
+        r = requests.delete(f"http://{self.addr.host}:{self.addr.port}/query/{path}?key={key}")
         if r.status_code != 200:
             raise fastapi.HTTPException(status_code=r.status_code, detail=r.text)
 
@@ -40,3 +40,19 @@ class Client:
         if r.status_code != 200:
             raise fastapi.HTTPException(status_code=r.status_code, detail=r.text)
         return r.json()
+
+    def read(self, path: str) -> Dict[str, Any]:
+        r = requests.get(f"http://{self.addr.host}:{self.addr.port}/file/{path}")
+        if r.status_code != 200:
+            raise fastapi.HTTPException(status_code=r.status_code, detail=r.text)
+        return r.json()
+
+    def write(self, path: str, data: Dict[str, Any]):
+        r = requests.post(f"http://{self.addr.host}:{self.addr.port}/file/{path}", json=data)
+        if r.status_code != 200:
+            raise fastapi.HTTPException(status_code=r.status_code, detail=r.text)
+
+    def remove(self, path: str):
+        r = requests.delete(f"http://{self.addr.host}:{self.addr.port}/file/{path}")
+        if r.status_code != 200:
+            raise fastapi.HTTPException(status_code=r.status_code, detail=r.text)

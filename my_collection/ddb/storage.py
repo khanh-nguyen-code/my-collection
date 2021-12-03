@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import base64
+import json
 import os
 from functools import reduce
-from typing import Any
+from typing import Any, Dict
 
 import dill
 import fastapi
@@ -31,38 +32,41 @@ class Storage(http.Server):
         self.file = open(db_path, "r+b")
         self.db = DB(self.file)
 
-    @ctx.http_method(ctx.method_get, "/data/{path:path}")
-    def get(self,
-            path: str = fastapi.Path(default=None),
-            key: str = fastapi.Query(default=None),
-            ):
+    @ctx.http_method(ctx.method_get, "/query/{path:path}")
+    async def get(self,
+                  path: str = fastapi.Path(default=None),
+                  key: str = fastapi.Query(default=None),
+                  ):
         with self.db.context() as db_ctx:
-            return db_ctx.read(f"{path}?key={key}").decode("utf-8")
+            b = db_ctx.read(f"{path}?key={key}")
+            if b is None:
+                return None
+            return json.loads(b.decode("utf-8"))
 
-    @ctx.http_method(ctx.method_post, "/data/{path:path}")
-    def post(self,
-             path: str = fastapi.Path(default=None),
-             key: str = fastapi.Query(default=None),
-             val: str = fastapi.Body(default=None),
-             ):
+    @ctx.http_method(ctx.method_post, "/query/{path:path}")
+    async def post(self,
+                   path: str = fastapi.Path(default=None),
+                   key: str = fastapi.Query(default=None),
+                   val: Any = fastapi.Body(default=None),
+                   ):
         with self.db.context() as db_ctx:
-            db_ctx.write(f"{path}?key={key}", val.encode("utf-8"))
+            db_ctx.write(f"{path}?key={key}", json.dumps(val).encode("utf-8"))
             self.file.flush()
 
-    @ctx.http_method(ctx.method_delete, "/data/{path:path}")
-    def delete(self,
-               path: str = fastapi.Path(default=None),
-               key: str = fastapi.Query(default=None),
-               ):
+    @ctx.http_method(ctx.method_delete, "/query/{path:path}")
+    async def delete(self,
+                     path: str = fastapi.Path(default=None),
+                     key: str = fastapi.Query(default=None),
+                     ):
         with self.db.context() as db_ctx:
             db_ctx.delete(f"{path}?key={key}")
             self.file.flush()
 
     @ctx.http_method(ctx.method_post, "/transform/{path:path}")
-    def transform(self,
-                  path: str = fastapi.Path(default=None),
-                  t: TransformRequest = fastapi.Body(default=None),
-                  ):
+    async def transform(self,
+                        path: str = fastapi.Path(default=None),
+                        t: TransformRequest = fastapi.Body(default=None),
+                        ):
         transform_func = dill.loads(base64.b64decode(t.transform_func))
         reduce_func = dill.loads(base64.b64decode(t.reduce_func))
         with self.db.context() as db_ctx:
@@ -71,10 +75,37 @@ class Storage(http.Server):
                 return key.split("?")[0] == path
 
             @t_map
-            def key_to_val(key: str) -> str:
-                return db_ctx.read(key).decode("utf-8")
+            def key_to_val(key: str) -> Any:
+                return json.loads(db_ctx.read(key).decode("utf-8"))
 
             func = transform_func * key_to_val * key_filter
             out = reduce(reduce_func, func(db_ctx.keys()), t.reduce_init)
             print(db_ctx.keys(), out)
             return out
+
+    @ctx.http_method(ctx.method_get, "/file/{path:path}")
+    async def read(self,
+                   path: str = fastapi.Path(default=None),
+                   ):
+        with self.db.context() as db_ctx:
+            return {key.split("?")[1][len("key="):]: db_ctx.read(key) for key in db_ctx.keys() if
+                    key.split("?")[0] == path}
+
+    @ctx.http_method(ctx.method_post, "/file/{path:path}")
+    async def write(self,
+                    path: str = fastapi.Path(default=None),
+                    data: Dict[str, Any] = fastapi.Body(default=None),
+                    ):
+        with self.db.context() as db_ctx:
+            for key, val in data.items():
+                db_ctx.write(f"{path}?key={key}", json.dumps(val).encode("utf-8"))
+            self.file.flush()
+
+    @ctx.http_method(ctx.method_delete, "/file/{path:path}")
+    async def remove(self,
+                     path: str = fastapi.Path(default=None),
+                     ):
+        with self.db.context() as db_ctx:
+            for key in db_ctx.keys():
+                if key.split("?")[0] == path:
+                    db_ctx.delete(key)
