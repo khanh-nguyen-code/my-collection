@@ -22,29 +22,24 @@ class Transform:
         return self(other)
 
 
-def flat_map(handler: Callable[[Any], Iterable]) -> Transform:
+def t_flat_map(handler: Callable[[Any], Iterable]) -> Transform:
     def helper(i: Iterable) -> Iterable:
         for item0 in i:
-            for item1 in handler(item0):
-                yield item1
+            yield from handler(item0)
 
     return Transform(handler=helper)
 
 
-def map(handler: Callable[[Any], Any]) -> Transform:
+def t_map(handler: Callable[[Any], Any]) -> Transform:
     def helper(i: Iterable) -> Iterable:
-        for item0 in i:
-            item1 = handler(item0)
-            yield item1
+        return map(handler, i)
 
     return Transform(handler=helper)
 
 
-def filter(handler: Callable[[Any], bool]) -> Transform:
+def t_filter(handler: Callable[[Any], bool]) -> Transform:
     def helper(i: Iterable) -> Iterable:
-        for item0 in i:
-            if handler(item0):
-                yield item0
+        return filter(handler, i)
 
     return Transform(handler=helper)
 
@@ -54,18 +49,18 @@ if __name__ == "__main__":
     from functools import reduce
 
 
-    @flat_map
+    @t_flat_map
     def m1(item: Any) -> Iterable:
         for i in range(item):
             yield item
 
 
-    @filter
+    @t_filter
     def m2(item: Any) -> bool:
         return item % 2 == 0
 
 
-    @map
+    @t_t_map
     def m3(item: Any) -> Any:
         return item - 1
 
