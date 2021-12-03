@@ -9,18 +9,11 @@ class Transform:
     def __init__(self, handler: Callable[[Iterable], Iterable]):
         self.handler = handler
 
-    def __call__(self, arg: Union[Iterable, Transform]) -> Union[Iterable, Transform]:
-        if isinstance(arg, Iterable):
-            return self.handler(arg)
-        if isinstance(arg, Transform):
-            def helper(i: Iterable) -> Iterable:
-                return self.handler(arg.handler(i))
-
-            return Transform(handler=helper)
-        raise Exception("type")
+    def __call__(self, i: Iterable) -> Iterable:
+        return self.handler(i)
 
     def __mul__(self, other: Transform) -> Transform:
-        return self(other)
+        return Transform(handler=lambda i: self.handler(other.handler(i)))
 
 
 def t_flat_map(handler: Callable[[Any], Iterable]) -> Transform:
@@ -61,7 +54,7 @@ if __name__ == "__main__":
 
 
     n = 1000
-    m = m3 * m2 * m1  # same as m3(m2(m1)))
+    m = m3 * m2 * m1
     s1 = reduce(lambda x, y: x + y, m(range(n)))
     import numpy as np
 

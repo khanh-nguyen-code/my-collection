@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
 
     n = 3000
-    m = m3 * m2 * m1  # same as m3(m2(m1)))
+    m = m3 * m2 * m1
     t0 = time.perf_counter()
     s1 = reduce(lambda x, y: x + y, m(range(n)))
     t1 = time.perf_counter()
