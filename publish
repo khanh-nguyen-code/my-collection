@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+rm -rf dist util.egg-info
+python setup.py sdist
+twine upload --verbose dist/*
