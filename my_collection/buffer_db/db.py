@@ -14,7 +14,7 @@ class Context:
     meta: Metadata
     using: bool
 
-    def __init__(self, file: Union[BinaryIO, IO], block_size: int = 1024, index_size: int = 8):
+    def __init__(self, file: Union[BinaryIO, IO], block_size: int = 256, index_size: int = 8):
         """
         FileDB
 
