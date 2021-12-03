@@ -1,6 +1,6 @@
 # sparsest-solution-underdetermined-linear-system
 
-optimize norm with underdetermined system equality constraint
+optimize norm with underdetermined system equality constraints
 
 ## problem statement
 

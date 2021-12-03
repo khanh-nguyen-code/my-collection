@@ -10,6 +10,14 @@ fast key value storage in file
 
 logger
 
+## nn_module
+
+collection of neural network implementations
+
+## suls 
+
+optimize norm with underdetermined system equality constraints
+
 ## transform
 
 map filter reduce
