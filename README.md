@@ -5,7 +5,7 @@ collection of libraries for python
 # installation
 
 ```bash
-pip install my-collection
+pip install --upgrade my-collection
 ```
 
 # libraries
