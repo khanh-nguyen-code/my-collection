@@ -51,7 +51,7 @@ class Storage(http.Server):
                    ):
         with self.db.context() as db_ctx:
             db_ctx.write(f"{path}?key={key}", json.dumps(val).encode("utf-8"))
-            self.file.flush()
+        self.file.flush()
 
     @ctx.http_method(ctx.method_delete, "/query/{path:path}")
     async def delete(self,
@@ -60,7 +60,7 @@ class Storage(http.Server):
                      ):
         with self.db.context() as db_ctx:
             db_ctx.delete(f"{path}?key={key}")
-            self.file.flush()
+        self.file.flush()
 
     @ctx.http_method(ctx.method_post, "/transform/{path:path}")
     async def transform(self,
@@ -107,7 +107,7 @@ class Storage(http.Server):
         with self.db.context() as db_ctx:
             for key, val in data.items():
                 db_ctx.write(f"{path}?key={key}", json.dumps(val).encode("utf-8"))
-            self.file.flush()
+        self.file.flush()
 
     @ctx.http_method(ctx.method_delete, "/file/{path:path}")
     async def remove(self,
@@ -117,3 +117,4 @@ class Storage(http.Server):
             for key in db_ctx.keys():
                 if key.split("?")[0] == path:
                     db_ctx.delete(key)
+        self.file.flush()
