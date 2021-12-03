@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(
-    name="khanh-python-util",
+    name="khanh_python_util",
     version="0.0.1",
     author="Nguyen Ngoc Khanh",
     author_email="khanh.nguyen.contact@gmail.com",
