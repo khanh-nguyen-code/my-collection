@@ -1,6 +1,6 @@
 import uvicorn
 
-from my_collection import ddb, buffer_db
+from my_collection import ddb
 
 if __name__ == "__main__":
     import threading
@@ -13,7 +13,7 @@ if __name__ == "__main__":
         ddb.Addr(host="localhost", port=3004),
     ]
     for i, addr in enumerate(storage_list):
-        t = threading.Thread(target=uvicorn.run, args=(buffer_db.Server(f"data_{i}.db").app,), kwargs=addr.dict())
+        t = threading.Thread(target=uvicorn.run, args=(ddb.Storage(f"data_{i}.db").app,), kwargs=addr.dict())
         t.start()
         t_list.append(t)
     addr = ddb.Addr(host="localhost", port=3000)

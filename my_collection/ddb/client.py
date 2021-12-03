@@ -5,8 +5,9 @@ import dill
 import fastapi
 import requests
 
-from my_collection import transform, buffer_db
-from my_collection.ddb import Addr
+from my_collection import transform
+from my_collection.ddb.server import Addr
+from my_collection.ddb.storage import TransformRequest
 
 
 class Client:
@@ -30,7 +31,7 @@ class Client:
             raise fastapi.HTTPException(status_code=r.status_code, detail=r.text)
 
     def transform(self, path: str, transform_func: transform.Transform, reduce_func: Callable[[Any, Any], Any]) -> Any:
-        t = buffer_db.TransformRequest(
+        t = TransformRequest(
             transform_func=base64.b64encode(dill.dumps(transform_func)),
             reduce_func=base64.b64encode(dill.dumps(reduce_func)),
             reduce_init=0,

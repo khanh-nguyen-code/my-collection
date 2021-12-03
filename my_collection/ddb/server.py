@@ -8,7 +8,7 @@ import pydantic
 import requests
 
 from my_collection import http, logger
-from my_collection.buffer_db import TransformRequest
+from my_collection.ddb.storage import TransformRequest
 
 
 class Addr(pydantic.BaseModel):

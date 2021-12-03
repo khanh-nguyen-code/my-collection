@@ -23,9 +23,9 @@ class TransformRequest(pydantic.BaseModel):
 ctx = http.Context()
 
 
-class Server(http.Server):
+class Storage(http.Server):
     def __init__(self, db_path: str):
-        super(Server, self).__init__(ctx)
+        super(Storage, self).__init__(ctx)
         if not os.path.exists(db_path):
             open(db_path, "wb").close()
         self.file = open(db_path, "r+b")
