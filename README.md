@@ -10,6 +10,10 @@ fast key value storage in file
 
 logger
 
+## model
+
+struct binding
+
 ## nn_module
 
 collection of neural network implementations

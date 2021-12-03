@@ -18,11 +18,6 @@ class Record:
         for field_name in self.__annotations__.keys():
             yield field_name, getattr(self, field_name)
 
-    def parse(self, o: dict[str, Any]) -> Record:
-        for field_name, field_value in o.items():
-            setattr(self, field_name, field_value)
-        return self
-
 
 def to_dataframe(*records: Record) -> pd.DataFrame:
     assert len(records) > 0, "records must not be empty"
@@ -34,22 +29,3 @@ def to_dataframe(*records: Record) -> pd.DataFrame:
 
 def from_dataframe(df: pd.DataFrame) -> Iterable[dict[str, Any]]:
     return map(lambda row: dict(row[1]), df.iterrows())
-
-
-class MyRecord(Record):
-    id: int
-    name: str
-    data: object
-
-
-if __name__ == "__main__":
-    r = MyRecord(id=3, name="1", data=None)
-    print(tuple(r))
-    print(dict(r))
-    df = to_dataframe(
-        MyRecord(1, name="2", data=None),
-        MyRecord(2, id=3, name="4", data=None)
-    )
-    print(df)
-    data = map(lambda kwargs: MyRecord(**kwargs), from_dataframe(df))
-    print(list(map(dict, data)))
