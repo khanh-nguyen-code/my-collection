@@ -14,13 +14,13 @@ class Client:
     def __init__(self, addr: Addr):
         self.addr = addr
 
-    def get(self, path: str, key: str) -> Any:
+    def get(self, path: str, key: str) -> str:
         r = requests.get(f"http://{self.addr.host}:{self.addr.port}/data/{path}?key={key}")
         if r.status_code != 200:
             raise fastapi.HTTPException(status_code=r.status_code, detail=r.text)
-        return r.json()
+        return str(r.json())
 
-    def post(self, path: str, key: str, val: Any):
+    def post(self, path: str, key: str, val: str):
         r = requests.post(f"http://{self.addr.host}:{self.addr.port}/data/{path}?key={key}", json=val)
         if r.status_code != 200:
             raise fastapi.HTTPException(status_code=r.status_code, detail=r.text)
