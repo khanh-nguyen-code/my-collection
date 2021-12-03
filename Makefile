@@ -5,5 +5,5 @@ build: clean
 	python setup.py sdist bdist_wheel
 
 clean:
-	rm -rf dist khanh_utils.egg-info
+	rm -rf dist my_collection.egg-info
 

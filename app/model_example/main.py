@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from khanh_utils import model
+from my_collection import model
 
 
 class MyRecord(model.Record):

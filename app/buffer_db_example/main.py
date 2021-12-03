@@ -4,7 +4,7 @@ import string
 import time
 from typing import Optional, Any, Callable
 
-from khanh_utils import buffer_db
+from my_collection import buffer_db
 
 
 def random_string(min_length: int, max_length: int) -> str:

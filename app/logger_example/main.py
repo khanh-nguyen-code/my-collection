@@ -1,4 +1,4 @@
-from khanh_utils import logger
+from my_collection import logger
 
 if __name__ == "__main__":
     logger.now().debug("debug1")

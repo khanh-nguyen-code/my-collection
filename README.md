@@ -1,6 +1,6 @@
-# python_util
+# my-collection 
 
-collection of utility libraries for python
+collection of libraries for python
 
 ## buffer_db
 

@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 import numpy as np
-from khanh_utils import suls
+from my_collection import suls
 from PIL import Image
 from matplotlib import pyplot as plt
 from pathos.multiprocessing import ProcessPool
