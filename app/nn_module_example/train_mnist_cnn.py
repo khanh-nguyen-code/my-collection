@@ -2,11 +2,11 @@ from typing import Tuple
 
 import cv2
 import numpy as np
+from module.module import Functional
 from torch import nn
 
 import mnist
 import util
-from module.module import Functional
 
 IMAGE_SIZE = 25
 KERNEL_SIZE = 5

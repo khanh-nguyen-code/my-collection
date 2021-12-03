@@ -2,9 +2,8 @@ import time
 from typing import Tuple
 
 import cvxpy as cp
-import numpy as np
-
 import logger
+import numpy as np
 
 
 def assert_arguments(A: np.ndarray, b: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:

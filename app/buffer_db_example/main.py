@@ -4,7 +4,7 @@ import string
 import time
 from typing import Optional, Any, Callable
 
-import buffer_db
+from khanh_utils import buffer_db
 
 
 def random_string(min_length: int, max_length: int) -> str:
@@ -42,7 +42,7 @@ def main(path: Optional[str] = "data.db", p_count: int = 95):
         # b : binary mode
         file = open(path, "r+b")
 
-    db = buffer_db.DB(file=file, block_size=32*1024)
+    db = buffer_db.DB(file=file, block_size=32 * 1024)
 
     with db.context() as ctx:
         print(f"stats: {db.stats()}")
@@ -58,24 +58,24 @@ def main(path: Optional[str] = "data.db", p_count: int = 95):
 
         # write 8000 keys
         val_list = [random_string(min_length, max_length).encode("utf-8") for _ in range(len(write1_keys))]
-        p_val = p(p_count, ctx.write, [f"key_{k}"for k in write1_keys], val_list)
-        print(f"write1 p{p_count} {p_val* 1000000} μs")
+        p_val = p(p_count, ctx.write, [f"key_{k}" for k in write1_keys], val_list)
+        print(f"write1 p{p_count} {p_val * 1000000} μs")
         print(f"stats: {db.stats()}")
 
         # delete 4000 keys
-        p_val = p(p_count, ctx.delete, [f"key_{k}"for k in delete1_keys])
-        print(f"delete1 p{p_count} {p_val* 1000000} μs")
+        p_val = p(p_count, ctx.delete, [f"key_{k}" for k in delete1_keys])
+        print(f"delete1 p{p_count} {p_val * 1000000} μs")
         print(f"stats: {db.stats()}")
 
         # write 8000 keys
         val_list = [random_string(min_length, max_length).encode("utf-8") for _ in range(len(write2_keys))]
-        p_val = p(p_count, ctx.write, [f"key_{k}"for k in write2_keys], val_list)
-        print(f"write2 p{p_count} {p_val* 1000000} μs")
+        p_val = p(p_count, ctx.write, [f"key_{k}" for k in write2_keys], val_list)
+        print(f"write2 p{p_count} {p_val * 1000000} μs")
         print(f"stats: {db.stats()}")
 
         # read 12000 keys
-        p_val = p(p_count, ctx.read, [f"key_{k}"for k in read1_keys])
-        print(f"read1 p{p_count} {p_val* 1000000} μs")
+        p_val = p(p_count, ctx.read, [f"key_{k}" for k in read1_keys])
+        print(f"read1 p{p_count} {p_val * 1000000} μs")
         print(f"stats: {db.stats()}")
 
     file.close()

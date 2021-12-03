@@ -5,13 +5,13 @@ import numpy as np
 import scipy as sp
 import scipy.sparse
 import torch
+from module.graphconv import GraphConv
+from module.module import Functional, Batch
+from module.weightedpool1d import WeightedPool1D
 from torch import nn
 
 import mnist
 import util
-from module.graphconv import GraphConv
-from module.module import Functional, Batch
-from module.weightedpool1d import WeightedPool1D
 
 IMAGE_SIZE = 25
 KERNEL_SIZE = 5

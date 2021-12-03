@@ -4,14 +4,14 @@ import cv2
 import numpy as np
 import scipy as sp
 import scipy.sparse
+from module.chebnet import ChebNet
+from module.module import Functional, Batch
+from module.weightedpool1d import WeightedPool1D
 from torch import nn
 
 import mnist
 import sparse
 import util
-from module.chebnet import ChebNet
-from module.module import Functional, Batch
-from module.weightedpool1d import WeightedPool1D
 
 IMAGE_SIZE = 25
 KERNEL_SIZE = 5

@@ -1,10 +1,8 @@
 from typing import List, Tuple, Optional
 
 import torch
-from torch import nn
-
-
 from nn_module import Module, CRF
+from torch import nn
 
 
 class CharBiLSTM_WordBiLSTM_CRF(Module):

@@ -3,7 +3,6 @@ from typing import Optional, Any
 import uvicorn
 from fastapi import FastAPI, Path, Query, Body
 from fastapi.staticfiles import StaticFiles
-
 from pydantic import BaseModel
 
 app = FastAPI()

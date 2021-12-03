@@ -2,9 +2,8 @@ import random
 from typing import List, Tuple, Iterator
 
 import torch
-from torch import optim
-
 from module.charbilstm_wordbilstm_crf import CharBiLSTM_WordBiLSTM_CRF
+from torch import optim
 
 
 def train(

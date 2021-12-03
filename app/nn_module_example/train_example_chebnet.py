@@ -3,10 +3,10 @@ from typing import List
 import networkx as nx
 import numpy as np
 import torch
+from module.chebnet import ChebNet
 from torch import nn, optim
 
 import sparse
-from module.chebnet import ChebNet
 
 g = nx.karate_club_graph()
 

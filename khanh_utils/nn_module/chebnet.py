@@ -3,9 +3,8 @@ import scipy as sp
 import scipy.sparse
 import scipy.sparse.linalg
 import torch
-from torch import nn
-
 from nn_module import Module
+from torch import nn
 
 
 class ChebNet(Module):

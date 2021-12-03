@@ -3,15 +3,15 @@ from __future__ import annotations
 import os
 from typing import BinaryIO, Union, Set
 
-import logger
-from buffer_db import model
-from buffer_db.io import IO
+from .model import Config, Metadata, Block, Key, BlockInfo, Stats
+from .io import IO
+from ..logger import logger
 
 
 class Context:
-    cfg: model.Config
+    cfg: Config
     file: Union[BinaryIO, IO]
-    meta: model.Metadata
+    meta: Metadata
     using: bool
 
     def __init__(self, file: Union[BinaryIO, IO], block_size: int = 1024, index_size: int = 8):
@@ -29,13 +29,13 @@ class Context:
             - unused blocks will be allocated for newly inserted object
 
         """
-        self.cfg = model.Config(block_size=block_size, index_size=index_size)
+        self.cfg = Config(block_size=block_size, index_size=index_size)
         self.file = file
         is_new_file = self.file.seek(0, os.SEEK_END) == 0
         if not is_new_file:
             self.__read_metadata()
         else:
-            self.meta = model.Metadata(
+            self.meta = Metadata(
                 num_blocks=0,
                 value_length_map={},
                 block_map={},
@@ -60,7 +60,7 @@ class Context:
             signed=False,
         )
         self.file.seek(start_of_meta)
-        self.meta = model.Metadata.parse_raw(self.file.read(end_of_meta - start_of_meta))
+        self.meta = Metadata.parse_raw(self.file.read(end_of_meta - start_of_meta))
 
     def __write_metadata(self):
         start_of_meta = self.cfg.block_size * self.meta.num_blocks
@@ -90,20 +90,20 @@ class Context:
         self.meta.unused_block_list = self.meta.unused_block_list[:-num_remove_blocks]
         self.meta.num_blocks -= num_remove_blocks
 
-    def __write_block(self, block: model.Block, b: bytes):
+    def __write_block(self, block: Block, b: bytes):
         self.file.seek(block * self.cfg.block_size)
         self.file.write(b)
 
-    def __read_block(self, block: model.Block) -> bytes:
+    def __read_block(self, block: Block) -> bytes:
         self.file.seek(block * self.cfg.block_size)
         return self.file.read(self.cfg.block_size)
 
-    def keys(self) -> Set[model.Key]:
+    def keys(self) -> Set[Key]:
         return set(self.meta.block_map.keys())
 
-    def write(self, key: model.Key, b: bytes):
+    def write(self, key: Key, b: bytes):
         if key not in self.meta.block_map:
-            self.meta.block_map[key] = model.BlockInfo(
+            self.meta.block_map[key] = BlockInfo(
                 block_list=[],
                 length=0,
             )
@@ -146,7 +146,7 @@ class Context:
 
         logger.now().info(f"write key {key}, written blocks {block_list}")
 
-    def read(self, key: model.Key) -> bytes:
+    def read(self, key: Key) -> bytes:
         if key not in self.meta.block_map:
             return b""
         block_list = self.meta.block_map[key].block_list
@@ -156,7 +156,7 @@ class Context:
         length = self.meta.block_map[key].length
         return value[:length]
 
-    def delete(self, key: model.Key):
+    def delete(self, key: Key):
         if key not in self.meta.block_map:
             return
         block_list = self.meta.block_map[key].block_list
@@ -183,8 +183,8 @@ class DB:
         self.ctx.__enter__()
         return self.ctx
 
-    def stats(self) -> model.Stats:
-        stats = model.Stats(
+    def stats(self) -> Stats:
+        stats = Stats(
             bytes_written=0,
             bytes_stored=0,
             storage_efficiency=0,

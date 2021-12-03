@@ -1,11 +1,11 @@
 from typing import Optional, List
 
 import numpy as np
+from khanh_utils import suls
 from PIL import Image
 from matplotlib import pyplot as plt
 from pathos.multiprocessing import ProcessPool
 
-import suls
 from app.suls_example.compressed_sensing import basis
 from app.suls_example.compressed_sensing.basis.laplacian import create_grid_adj_matrix
 

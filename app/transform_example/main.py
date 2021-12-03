@@ -1,8 +1,7 @@
-from transform import t_flat_map, t_filter, t_map
-
+from functools import reduce
 from typing import Any, Iterable
 
-from functools import reduce
+from khanh_utils.transform import t_flat_map, t_filter, t_map
 
 if __name__ == "__main__":
 

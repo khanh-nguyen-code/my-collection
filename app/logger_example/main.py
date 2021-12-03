@@ -1,4 +1,4 @@
-import logger
+from khanh_utils import logger
 
 if __name__ == "__main__":
     logger.now().debug("debug1")

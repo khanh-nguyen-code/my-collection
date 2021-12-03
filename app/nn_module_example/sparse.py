@@ -3,6 +3,7 @@ import scipy as sp
 import scipy.sparse
 import torch
 
+
 def from_scipy(mx: sp.sparse.spmatrix) -> torch.Tensor:
     """
     :param mx: (n, n) scipy sparse matrix

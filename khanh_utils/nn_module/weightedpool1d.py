@@ -1,9 +1,8 @@
 from typing import List, Optional
 
 import torch
-from torch import nn
-
 from nn_module import Module
+from torch import nn
 
 
 class WeightedPool1D(Module):

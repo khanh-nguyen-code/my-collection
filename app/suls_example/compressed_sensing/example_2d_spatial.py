@@ -5,7 +5,7 @@ from PIL import Image
 from matplotlib import pyplot as plt
 from pathos.multiprocessing import ProcessPool
 
-import suls
+from khanh_utils import suls
 
 
 def mat_stack(mat: List[List[np.ndarray]]) -> np.ndarray:

@@ -18,7 +18,7 @@ struct binding
 
 collection of neural network implementations
 
-## suls 
+## suls
 
 optimize norm with underdetermined system equality constraints
 
