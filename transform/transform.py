@@ -60,7 +60,7 @@ if __name__ == "__main__":
         return item % 2 == 0
 
 
-    @t_t_map
+    @t_map
     def m3(item: Any) -> Any:
         return item - 1
 
