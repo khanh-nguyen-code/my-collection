@@ -32,17 +32,11 @@ def t_flat_map(handler: Callable[[Any], Iterable]) -> Transform:
 
 
 def t_map(handler: Callable[[Any], Any]) -> Transform:
-    def helper(i: Iterable) -> Iterable:
-        return map(handler, i)
-
-    return Transform(handler=helper)
+    return Transform(handler=lambda i: map(handler, i))
 
 
 def t_filter(handler: Callable[[Any], bool]) -> Transform:
-    def helper(i: Iterable) -> Iterable:
-        return filter(handler, i)
-
-    return Transform(handler=helper)
+    return Transform(handler=lambda i: filter(handler, i))
 
 
 if __name__ == "__main__":
