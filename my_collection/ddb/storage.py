@@ -88,8 +88,16 @@ class Storage(http.Server):
                    path: str = fastapi.Path(default=None),
                    ):
         with self.db.context() as db_ctx:
-            return {key.split("?")[1][len("key="):]: db_ctx.read(key) for key in db_ctx.keys() if
-                    key.split("?")[0] == path}
+            out = {}
+            for key in db_ctx.keys():
+                if key.split("?")[0] != path:
+                    continue
+                b = db_ctx.read(key)
+                if b is None:
+                    continue
+                k = key.split("?")[1][len("key="):]
+                out[k] = json.loads(b.decode("utf-8"))
+            return out
 
     @ctx.http_method(ctx.method_post, "/file/{path:path}")
     async def write(self,
