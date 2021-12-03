@@ -14,7 +14,7 @@ class Context:
     meta: Metadata
     using: bool
 
-    def __init__(self, file: Union[BinaryIO, IO], block_size: int = 256, index_size: int = 8):
+    def __init__(self, file: Union[BinaryIO, IO], block_size: int, index_size: int):
         """
         FileDB
 
@@ -174,7 +174,7 @@ class Context:
 
 
 class DB:
-    def __init__(self, file: Union[BinaryIO, IO], block_size: int = 1024, index_size: int = 8):
+    def __init__(self, file: Union[BinaryIO, IO], block_size: int = 32, index_size: int = 8):
         self.ctx = Context(file=file, block_size=block_size, index_size=index_size)
 
     def context(self) -> Context:
