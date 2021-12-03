@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import os
-from typing import BinaryIO, Union
+from typing import BinaryIO, Union, Set
 
+import logger
 from buffer_db import model
 from buffer_db.io import IO
 
@@ -97,7 +98,7 @@ class Context:
         self.file.seek(block * self.cfg.block_size)
         return self.file.read(self.cfg.block_size)
 
-    def keys(self) -> set[model.Key]:
+    def keys(self) -> Set[model.Key]:
         return set(self.meta.block_map.keys())
 
     def write(self, key: model.Key, b: bytes):
@@ -143,6 +144,8 @@ class Context:
             stop_idx = min(start_idx + self.cfg.block_size, len(b))
             self.__write_block(block, b[start_idx:stop_idx])
 
+        logger.now().info(f"write key {key}, written blocks {block_list}")
+
     def read(self, key: model.Key) -> bytes:
         if key not in self.meta.block_map:
             return b""
@@ -166,6 +169,8 @@ class Context:
                 break
             num_del_blocks += 1
         self.__remove_blocks_local(num_del_blocks)
+
+        logger.now().info(f"delete key {key}, deleted blocks {block_list}")
 
 
 class DB:
