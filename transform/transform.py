@@ -50,6 +50,10 @@ def filter(handler: Callable[[Any], bool]) -> Transform:
 
 
 if __name__ == "__main__":
+
+    from functools import reduce
+
+
     @flat_map
     def m1(item: Any) -> Iterable:
         for i in range(item):
@@ -67,7 +71,8 @@ if __name__ == "__main__":
 
 
     n = 1000
-    s1 = reduce(lambda x, y: x + y, (m1 + m2 + m3)(range(n)))
+    m = m3 * m2 * m1  # same as m3(m2(m1)))
+    s1 = reduce(lambda x, y: x + y, m(range(n)))
     import numpy as np
 
     a = np.arange(0, n, 2)
