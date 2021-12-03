@@ -88,5 +88,7 @@ if __name__ == "__main__":
         print("local count time:", t1-t0)
         print(word_count)
 
+        c.remove(path)
+
     except fastapi.HTTPException as e:
         print(e.status_code, e.detail)
