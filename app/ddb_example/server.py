@@ -1,21 +1,32 @@
+import multiprocessing as mp
+
 import uvicorn
 
 from my_collection import ddb
 
-if __name__ == "__main__":
-    import threading
 
-    t_list = []
+def run_storage(addr: ddb.Addr):
+    uvicorn.run(ddb.Storage(f"data_{addr.port}.db", block_size=1024).app, host=addr.host, port=addr.port)
+
+
+def run_server(addr: ddb.Addr, storage_list: ddb.Addr):
+    uvicorn.run(ddb.Server(storage_list).app, host=addr.host, port=addr.port)
+
+
+if __name__ == "__main__":
+
+    p_list = []
     num_storages = 4
 
     storage_list = [ddb.Addr(host="localhost", port=3000 + i) for i in range(num_storages)]
-    for i, addr in enumerate(storage_list):
-        t = threading.Thread(target=uvicorn.run, args=(ddb.Storage(f"data_{i}.db", block_size=32).app,), kwargs=addr.dict())
-        t.start()
-        t_list.append(t)
+    for addr in storage_list:
+        p = mp.Process(target=run_storage, args=(addr,))
+        p_list.append(p)
+        p.start()
+
     addr = ddb.Addr(host="localhost", port=2999)
-    t = threading.Thread(target=uvicorn.run, args=(ddb.Server(storage_list).app,), kwargs=addr.dict())
-    t.start()
-    t_list.append(t)
-    for t in t_list:
-        t.join()
+    p = mp.Process(target=run_server, args=(addr, storage_list))
+    p.start()
+    p_list.append(p)
+    for p in p_list:
+        p.join()

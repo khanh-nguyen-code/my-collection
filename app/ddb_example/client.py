@@ -6,6 +6,7 @@ import fastapi
 from my_collection import ddb
 from my_collection.transform import t_map, t_filter, t_flat_map
 
+
 if __name__ == "__main__":
     c = ddb.Client(addr=ddb.Addr(host="localhost", port=2999))
     path = "file1"
@@ -48,8 +49,6 @@ if __name__ == "__main__":
 
     path = "word_count.txt"
     try:
-        with open(path) as f:
-            data = {f"line_{i}": line for i, line in enumerate(f)}
 
         num_keys = c.transform(
             path,
@@ -57,24 +56,36 @@ if __name__ == "__main__":
             reduce_func=lambda a, b: a + b,
         )
         if num_keys == 0:
+            with open(path) as f:
+                data = {f"line_{i}": line.rstrip("\n") for i, line in enumerate(f)}
             t0 = time.perf_counter()
             c.write(path, data)
             t1 = time.perf_counter()
             print("write time:", t1 - t0)
 
+        transform_func = t_map(lambda x: 1) * t_flat_map(lambda line: line.split(" "))
+        reduce_func = lambda a, b: a + b
+
         t0 = time.perf_counter()
         word_count = c.transform(
             path,
-            transform_func=t_map(lambda x: 1) * t_flat_map(lambda line: line.split(" ")),
-            reduce_func=lambda a, b: a + b,
+            transform_func=transform_func,
+            reduce_func=reduce_func,
         )
         t1 = time.perf_counter()
         print("count time:", t1 - t0)
         print(word_count)
 
+        char_count = c.transform(
+            path,
+            transform_func= t_map(lambda x: len(x)) * t_flat_map(lambda line: line.split(" ")),
+            reduce_func=reduce_func,
+        )
+        print(f"average word length: {char_count/word_count}")
+
         t0 = time.perf_counter()
         with open(path) as f:
-            reduce(lambda a, b: a + b, (t_map(lambda x: 1) * t_flat_map(lambda line: line.split(" ")))(f))
+            reduce(reduce_func, transform_func(f))
         t1 = time.perf_counter()
         print("local count time:", t1 - t0)
         print(word_count)
