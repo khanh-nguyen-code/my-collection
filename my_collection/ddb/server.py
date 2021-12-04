@@ -1,4 +1,5 @@
 import base64
+import hashlib
 from functools import reduce
 from typing import List, Dict, Any
 
@@ -9,6 +10,16 @@ import requests
 
 from my_collection import http, logger
 from my_collection.ddb.storage import TransformRequest
+
+
+def hash(key: str) -> int:
+    h = hashlib.blake2b()
+    h.update(key.encode("utf-8"))
+    return int.from_bytes(
+        bytes=h.digest(),
+        byteorder="big",
+        signed=False,
+    )
 
 
 class Addr(pydantic.BaseModel):

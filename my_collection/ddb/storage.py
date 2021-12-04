@@ -25,12 +25,12 @@ ctx = http.Context()
 
 
 class Storage(http.Server):
-    def __init__(self, db_path: str):
+    def __init__(self, db_path: str, *args, **kwargs):
         super(Storage, self).__init__(ctx)
         if not os.path.exists(db_path):
             open(db_path, "wb").close()
         self.file = open(db_path, "r+b")
-        self.db = DB(self.file)
+        self.db = DB(self.file, *args, **kwargs)
 
     @ctx.http_method(ctx.method_get, "/query/{path:path}")
     async def get(self,

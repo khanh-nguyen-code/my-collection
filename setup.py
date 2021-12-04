@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="my-collection",
-    version="0.0.6",
+    version="0.0.7",
     author="Nguyen Ngoc Khanh",
     author_email="khanh.nguyen.contact@gmail.com",
     description="collection of utility libraries for python",
