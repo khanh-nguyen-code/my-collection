@@ -1,11 +1,10 @@
 import time
 from functools import reduce
-from typing import Any, Iterable
 
 import fastapi
 
-from my_collection import ddb, transform
-from my_collection.transform import t_flat_map, t_map
+from my_collection import ddb
+from my_collection.transform import t_map, t_filter, t_flat_map
 
 if __name__ == "__main__":
     c = ddb.Client(addr=ddb.Addr(host="localhost", port=3000))
@@ -26,18 +25,11 @@ if __name__ == "__main__":
         print("only key2", c.get(path, "key2"))
         print("all keys", c.read(path))
 
-
-        @transform.t_map
-        def get_i(val: Any) -> int:
-            return val["idx"]
-
-
-        @transform.t_filter
-        def keep_odd(val: int) -> bool:
-            return val % 2 == 1
-
-
-        val = c.transform(path, transform_func=keep_odd * get_i, reduce_func=lambda a, b: a + b)
+        val = c.transform(
+            path,
+            transform_func=t_filter(lambda idx: idx % 2 == 1) * t_map(lambda val: val["idx"]),
+            reduce_func=lambda a, b: a + b,
+        )
 
         print("sum of all odd numbers", val)
 
@@ -59,33 +51,25 @@ if __name__ == "__main__":
         with open(path) as f:
             data = {f"line_{i}": line.rstrip("\n") for i, line in enumerate(f) if len(line.rstrip("\n")) > 0}
 
-        t0 = time.perf_counter()
-        c.write(path, data)
-        t1 = time.perf_counter()
-        print("write time:", t1-t0)
-
-
-        @t_flat_map
-        def split(line: str) -> Iterable[str]:
-            return line.split(" ")
-
-
-        @t_map
-        def to_count(word: str) -> int:
-            return 1
-
+        num_keys = c.transform(
+            path,
+            transform_func=t_map(lambda x: 1),
+            reduce_func=lambda a, b: a + b,
+        )
+        if num_keys == 0:
+            t0 = time.perf_counter()
+            c.write(path, data)
+            t1 = time.perf_counter()
+            print("write time:", t1 - t0)
 
         t0 = time.perf_counter()
-        word_count = c.transform(path, to_count * split, lambda a, b: a + b)
+        word_count = c.transform(
+            path,
+            transform_func=t_map(lambda x: 1) * t_flat_map(lambda line: line.split(" ")),
+            reduce_func=lambda a, b: a + b,
+        )
         t1 = time.perf_counter()
-        print("count time:", t1-t0)
-        print(word_count)
-
-        t0 = time.perf_counter()
-        with open(path) as f:
-            word_count = reduce(lambda a, b: a+b, (to_count * split)(line for i, line in enumerate(f) if len(line.rstrip("\n")) > 0))
-        t1 = time.perf_counter()
-        print("local count time:", t1-t0)
+        print("count time:", t1 - t0)
         print(word_count)
 
         # c.remove(path)
