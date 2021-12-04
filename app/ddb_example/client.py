@@ -7,7 +7,7 @@ from my_collection import ddb
 from my_collection.transform import t_map, t_filter, t_flat_map
 
 if __name__ == "__main__":
-    c = ddb.Client(addr=ddb.Addr(host="localhost", port=3000))
+    c = ddb.Client(addr=ddb.Addr(host="localhost", port=2999))
     path = "file1"
     try:
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     path = "word_count.txt"
     try:
         with open(path) as f:
-            data = {f"line_{i}": line.rstrip("\n") for i, line in enumerate(f) if len(line.rstrip("\n")) > 0}
+            data = {f"line_{i}": line for i, line in enumerate(f)}
 
         num_keys = c.transform(
             path,
@@ -70,6 +70,13 @@ if __name__ == "__main__":
         )
         t1 = time.perf_counter()
         print("count time:", t1 - t0)
+        print(word_count)
+
+        t0 = time.perf_counter()
+        with open(path) as f:
+            reduce(lambda a, b: a + b, (t_map(lambda x: 1) * t_flat_map(lambda line: line.split(" ")))(f))
+        t1 = time.perf_counter()
+        print("local count time:", t1 - t0)
         print(word_count)
 
         # c.remove(path)

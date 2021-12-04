@@ -6,17 +6,14 @@ if __name__ == "__main__":
     import threading
 
     t_list = []
-    storage_list = [
-        ddb.Addr(host="localhost", port=3001),
-        ddb.Addr(host="localhost", port=3002),
-        ddb.Addr(host="localhost", port=3003),
-        ddb.Addr(host="localhost", port=3004),
-    ]
+    num_storages = 4
+
+    storage_list = [ddb.Addr(host="localhost", port=3000 + i) for i in range(num_storages)]
     for i, addr in enumerate(storage_list):
-        t = threading.Thread(target=uvicorn.run, args=(ddb.Storage(f"data_{i}.db", block_size=1024).app,), kwargs=addr.dict())
+        t = threading.Thread(target=uvicorn.run, args=(ddb.Storage(f"data_{i}.db", block_size=32).app,), kwargs=addr.dict())
         t.start()
         t_list.append(t)
-    addr = ddb.Addr(host="localhost", port=3000)
+    addr = ddb.Addr(host="localhost", port=2999)
     t = threading.Thread(target=uvicorn.run, args=(ddb.Server(storage_list).app,), kwargs=addr.dict())
     t.start()
     t_list.append(t)
