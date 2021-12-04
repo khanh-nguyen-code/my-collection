@@ -13,7 +13,7 @@ if __name__ == "__main__":
         ddb.Addr(host="localhost", port=3004),
     ]
     for i, addr in enumerate(storage_list):
-        t = threading.Thread(target=uvicorn.run, args=(ddb.Storage(f"data_{i}.db", block_size=32).app,), kwargs=addr.dict())
+        t = threading.Thread(target=uvicorn.run, args=(ddb.Storage(f"data_{i}.db", block_size=1024).app,), kwargs=addr.dict())
         t.start()
         t_list.append(t)
     addr = ddb.Addr(host="localhost", port=3000)
