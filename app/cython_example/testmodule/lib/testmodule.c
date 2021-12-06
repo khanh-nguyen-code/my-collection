@@ -5,6 +5,7 @@
 int c_int(int in_int) {
     return in_int;
 }
+
 char* c_string(char* in_string) {
     int len = strlen(in_string);
     char* out_string = (char*) malloc((1 + len) * sizeof(char));
@@ -12,6 +13,7 @@ char* c_string(char* in_string) {
     out_string[len] = '\0';
     return out_string;
 }
+
 void c_ptr(int h, int w, double* in_arr, double* out_arr) {
     for (int i_h=0; i_h<h; i_h++) {
         for (int i_w=0; i_w<w; i_w++) {

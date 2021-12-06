@@ -15,7 +15,7 @@ if __name__ == "__main__":
             setuptools.Extension(
                 name="testmodule.wrapper",
                 sources=[
-                    os.path.join("testmodule", "lib", "testmodule.cpp"),
+                    os.path.join("testmodule", "lib", "testmodule.c"),
                     os.path.join("testmodule", "wrapper.pyx")
                 ],
                 libraries=[],
