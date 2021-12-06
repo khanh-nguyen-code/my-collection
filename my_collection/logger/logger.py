@@ -62,13 +62,13 @@ class Logger:
     __info_writer: Writer
     __error_writer: Writer
 
-    def __init__(self, debug_writer: Writer = None, info_writer: Writer = None, error_writer: Writer = None, ):
+    def __init__(self, debug_writer: Writer = None, info_writer: Writer = None, error_writer: Writer = None):
         self.__debug_writer = debug_writer
         self.__info_writer = info_writer
         self.__error_writer = error_writer
 
     def now(self) -> Context:
-        caller_frame: inspect.FrameInfo = inspect.getouterframes(inspect.currentframe(), 0)[-1]
+        caller_frame: inspect.FrameInfo = inspect.getouterframes(inspect.currentframe(), 0)[1]
         return Context(
             debug_writer=self.__debug_writer,
             info_writer=self.__info_writer,
@@ -111,6 +111,4 @@ def set_global_logger(level: int = DEBUG):
             error_writer=__stderr_writer,
         )
 
-
-def now() -> Context:
-    return __global_logger.now()
+now = __global_logger.now
