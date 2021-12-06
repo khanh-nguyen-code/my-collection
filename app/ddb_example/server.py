@@ -6,7 +6,7 @@ from my_collection import ddb
 
 
 def run_storage(addr: ddb.Addr):
-    uvicorn.run(ddb.Storage(f"data_{addr.port}.db", block_size=1024).app, host=addr.host, port=addr.port)
+    uvicorn.run(ddb.Storage(f"data_{addr.port}.db").app, host=addr.host, port=addr.port)
 
 
 def run_server(addr: ddb.Addr, storage_list: ddb.Addr):
