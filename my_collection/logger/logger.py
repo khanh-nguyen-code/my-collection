@@ -68,7 +68,7 @@ class Logger:
         self.__error_writer = error_writer
 
     def now(self) -> Context:
-        caller_frame: inspect.FrameInfo = inspect.getouterframes(inspect.currentframe(), 0)[1]
+        caller_frame: inspect.FrameInfo = inspect.getouterframes(inspect.currentframe(), 0)[-1]
         return Context(
             debug_writer=self.__debug_writer,
             info_writer=self.__info_writer,
