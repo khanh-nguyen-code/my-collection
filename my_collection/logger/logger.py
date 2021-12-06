@@ -109,4 +109,5 @@ def set_global_logger(level: int = DEBUG):
             error_writer=__stderr_writer,
         )
 
+
 now = __global_logger.now
