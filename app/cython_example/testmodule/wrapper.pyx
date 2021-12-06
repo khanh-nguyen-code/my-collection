@@ -12,17 +12,17 @@ def py_int(in_int: int) -> int:
     return c_int(in_int)
 
 def py_string(in_string: str, encoding: str="utf-8", errors: str="strict") -> str:
-    in_bytes = in_string.encode(encoding=encoding, errors=errors)
-    length = len(in_bytes)
+    in_bytes: bytes = in_string.encode(encoding=encoding, errors=errors)
 
-    cdef char* c_in_string = <char *> stdlib.malloc(length + 1)
+    cdef char* c_in_string = <char *> stdlib.malloc(1 + <Py_ssize_t> len(in_bytes))
     cdef char* c_out_string
 
     string.strcpy(c_in_string, in_bytes);
 
     try:
         c_out_string = c_string(c_in_string)
-        return c_out_string.decode(encoding=encoding, errors=errors)
+        out_bytes: bytes = c_out_string[:]  # copy
+        return out_bytes.decode(encoding=encoding, errors=errors)
     finally:
         stdlib.free(c_in_string)
         stdlib.free(c_out_string)
