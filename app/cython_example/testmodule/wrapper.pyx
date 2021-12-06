@@ -5,16 +5,26 @@ cdef extern from "lib/testmodule.h":
     void c_ptr(int h, int w, double* in_arr, double* out_arr)
 
 cimport libc.stdlib as stdlib
+cimport libc.string as string
 import numpy as np
 
 def py_int(in_int: int) -> int:
     return c_int(in_int)
 
-def py_string(in_string: str) -> str:
-    cdef char* c_out_string = c_string(in_string.encode("utf-8"))
+def py_string(in_string: str, encoding: str="utf-8", errors: str="strict") -> str:
+    in_bytes = in_string.encode(encoding=encoding, errors=errors)
+    length = len(in_bytes)
+
+    cdef char* c_in_string = <char *> stdlib.malloc(length + 1)
+    cdef char* c_out_string
+
+    string.strcpy(c_in_string, in_bytes);
+
     try:
-        return c_out_string.decode("utf-8")
+        c_out_string = c_string(c_in_string)
+        return c_out_string.decode(encoding=encoding, errors=errors)
     finally:
+        stdlib.free(c_in_string)
         stdlib.free(c_out_string)
 
 def py_arr(in_arr: np.ndarray) -> np.ndarray:
