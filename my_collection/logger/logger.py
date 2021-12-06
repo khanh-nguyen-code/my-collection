@@ -52,9 +52,7 @@ class Context:
     def __to_log(self, msg: str) -> str:
         time_str = time.strftime('%Y/%m/%d %H:%M:%S', self.__time_now)
         field_str_list = [f"{key}={val}" for key, val in self.__kv_list]
-        if not msg.endswith("\n"):
-            msg += "\n"
-        return "|".join([time_str, *field_str_list, msg])
+        return "|".join([time_str, *field_str_list, msg]).rstrip("\n")
 
 
 class Logger:
@@ -79,11 +77,11 @@ class Logger:
 
 
 def __stdout_writer(msg: str):
-    print(msg, file=sys.stdout, end="")
+    print(msg, file=sys.stdout)
 
 
 def __stderr_writer(msg: str):
-    print(msg, file=sys.stderr, end="")
+    print(msg, file=sys.stderr)
 
 
 __global_logger = Logger(info_writer=__stdout_writer, error_writer=__stderr_writer, debug_writer=__stdout_writer)
