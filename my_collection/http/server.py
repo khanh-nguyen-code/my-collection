@@ -17,6 +17,9 @@ async def exception_handler(r: fastapi.Request, e: Exception):
 
 
 class Server:
+    """
+    http server
+    """
     app: fastapi.FastAPI
 
     def __init__(self, ctx: Context):
@@ -26,12 +29,12 @@ class Server:
 
     def __init_server(self):
         self.app.exception_handler(Exception)(exception_handler)
-        for (method, path), func_name in self.ctx.method_dict.items():
+        for (method, path), cfg in self.ctx.method_dict.items():
             if method == self.ctx.method_get:
-                self.app.get(path)(self.__getattribute__(func_name))
+                self.app.get(path, *cfg.args, **cfg.kwargs)(self.__getattribute__(cfg.handler_name))
             if method == self.ctx.method_post:
-                self.app.post(path)(self.__getattribute__(func_name))
+                self.app.post(path, *cfg.args, **cfg.kwargs)(self.__getattribute__(cfg.handler_name))
             if method == self.ctx.method_put:
-                self.app.put(path)(self.__getattribute__(func_name))
+                self.app.put(path, *cfg.args, **cfg.kwargs)(self.__getattribute__(cfg.handler_name))
             if method == self.ctx.method_delete:
-                self.app.delete(path)(self.__getattribute__(func_name))
+                self.app.delete(path, *cfg.args, **cfg.kwargs)(self.__getattribute__(cfg.handler_name))
