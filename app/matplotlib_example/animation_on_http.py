@@ -1,6 +1,6 @@
 import queue
 import threading
-from typing import Iterable, Iterator, Tuple, Optional
+from typing import Iterable, Iterator, Tuple, Optional, List
 
 import fastapi
 import matplotlib.pyplot as plt
@@ -21,9 +21,9 @@ ctx = http.Context()
 q = queue.Queue(maxsize=1)
 
 
-class Point(pydantic.BaseModel):
+class Points(pydantic.BaseModel):
     line: str
-    data: Tuple[float, float]
+    data: List[Tuple[float, float]]
 
 
 def run_animation(q: queue.Queue, ax: Axes) -> FuncAnimation:
@@ -34,11 +34,11 @@ def run_animation(q: queue.Queue, ax: Axes) -> FuncAnimation:
                 point = q.get(block=True, timeout=0.001)
                 # if not queue.Empty
                 if point.line not in storage:
-                    storage[point.line] = np.array((point.data,), dtype=np.float64)
+                    storage[point.line] = np.array(point.data, dtype=np.float64)
                 else:
-                    storage[point.line] = np.concatenate((storage[point.line], (point.data,)), axis=0)
-                    argsort = np.argsort(storage[point.line][:, 0])  # sort by x
-                    storage[point.line] = storage[point.line][argsort, :]
+                    storage[point.line] = np.concatenate((storage[point.line], point.data), axis=0)
+                argsort = np.argsort(storage[point.line][:, 0])  # sort by x
+                storage[point.line] = storage[point.line][argsort, :]
             except queue.Empty:
                 pass
             yield storage
@@ -85,11 +85,6 @@ def run_animation(q: queue.Queue, ax: Axes) -> FuncAnimation:
     return ani
 
 
-class Request(pydantic.BaseModel):
-    x: float
-    y: float
-
-
 class Server(http.Server):
     def __init__(self):
         super(Server, self).__init__(ctx)
@@ -98,9 +93,9 @@ class Server(http.Server):
     def post_point(
             self,
             line: str = fastapi.Path(default=""),
-            request: Request = fastapi.Body(default=None),
+            req: List[Tuple[float, float]] = fastapi.Body(default=None),
     ):
-        q.put(Point(line=line, data=(request.x, request.y)))
+        q.put(Points(line=line, data=req))
 
     @ctx.http_method(ctx.method_get, "/line", response_class=fastapi.responses.HTMLResponse)
     def get_line(self):
