@@ -28,7 +28,7 @@ class Point(pydantic.BaseModel):
 
 def run_animation(q: queue.Queue, ax: Axes) -> FuncAnimation:
     def data_iter_func() -> Iterable[dict[str, np.ndarray]]:
-        storage: dict[str, np.ndarray] = {}
+        storage: dict[str, np.ndarray] = {}  # np.ndarray shape (n, 2)
         while True:
             try:
                 point = q.get(block=True, timeout=0.001)
@@ -37,6 +37,8 @@ def run_animation(q: queue.Queue, ax: Axes) -> FuncAnimation:
                     storage[point.line] = np.array((point.data,), dtype=np.float64)
                 else:
                     storage[point.line] = np.concatenate((storage[point.line], (point.data,)), axis=0)
+                    argsort = np.argsort(storage[point.line][:, 0])  # sort by x
+                    storage[point.line] = storage[point.line][argsort, :]
             except queue.Empty:
                 pass
             yield storage
