@@ -1,29 +1,13 @@
 from functools import reduce
-from typing import Any, Iterable
 
 from my_collection.transform import t_flat_map, t_filter, t_map
 
 if __name__ == "__main__":
-
-    @t_flat_map
-    def m1(item: Any) -> Iterable:
-        for i in range(item):
-            yield item
-
-
-    @t_filter
-    def m2(item: Any) -> bool:
-        return item % 2 == 0
-
-
-    @t_map
-    def m3(item: Any) -> Any:
-        return item - 1
-
-
     n = 1000
-    m = m3 * m2 * m1
-    s1 = reduce(lambda x, y: x + y, m(range(n)))
+    m3 = t_map(lambda item: item - 1)
+    m2 = t_filter(lambda item: item % 2 == 0)
+    m1 = t_flat_map(lambda item: (item for _ in range(item)))
+    s1 = reduce(lambda x, y: x + y, (m3 * m2 * m1)(range(n)))
     import numpy as np
 
     a = np.arange(0, n, 2)
