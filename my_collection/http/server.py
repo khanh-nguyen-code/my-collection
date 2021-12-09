@@ -25,9 +25,7 @@ class Server:
     def __init__(self, ctx: Context):
         self.app = fastapi.FastAPI()
         self.ctx = ctx
-        self.__init_server()
 
-    def __init_server(self):
         self.app.exception_handler(Exception)(exception_handler)
         for (method, path), cfg in self.ctx.method_dict.items():
             if method == self.ctx.method_get:

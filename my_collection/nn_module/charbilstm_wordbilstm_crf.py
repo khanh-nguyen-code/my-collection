@@ -1,7 +1,8 @@
 from typing import List, Tuple, Optional
 
 import torch
-from nn_module import Module, CRF
+from .module import Module
+from .crf import CRF
 from torch import nn
 
 

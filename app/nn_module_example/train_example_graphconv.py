@@ -3,7 +3,7 @@ from typing import List
 import networkx as nx
 import numpy as np
 import torch
-from module.graphconv import GraphConv
+from my_collection.nn_module import GraphConv
 from torch import nn, optim
 
 g = nx.karate_club_graph()

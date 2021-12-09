@@ -5,9 +5,9 @@ import numpy as np
 import scipy as sp
 import scipy.sparse
 import torch
-from module.graphconv import GraphConv
-from module.module import Functional, Batch
-from module.weightedpool1d import WeightedPool1D
+from my_collection.nn_module import GraphConv
+from my_collection.nn_module import Functional, Batch
+from my_collection.nn_module import WeightedPool1D
 from torch import nn
 
 import mnist

@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 import torch
-from nn_module import Module
+from .module import Module
 from torch import nn
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from nn_module import Module
+from .module import Module
 
 
 class GCN(Module):

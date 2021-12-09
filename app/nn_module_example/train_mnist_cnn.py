@@ -2,7 +2,7 @@ from typing import Tuple
 
 import cv2
 import numpy as np
-from module.module import Functional
+from my_collection.nn_module import Functional
 from torch import nn
 
 import mnist

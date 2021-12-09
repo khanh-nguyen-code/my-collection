@@ -2,7 +2,7 @@ import random
 from typing import List, Tuple, Iterator
 
 import torch
-from module.charbilstm_wordbilstm_crf import CharBiLSTM_WordBiLSTM_CRF
+from my_collection.nn_module import CharBiLSTM_WordBiLSTM_CRF
 from torch import optim
 
 

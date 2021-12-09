@@ -21,7 +21,7 @@ class Context:
     method_delete: str = "delete"
 
     def __init__(self):
-        self.method_dict: Dict[Method, MethodConfig] = {}  # (method, path) -> func_name
+        self.method_dict: Dict[Method, MethodConfig] = {}  # (method, path) -> method_config
 
     def http_method(self, method: str, path: str, *args, **kwargs):
         def helper(func: Callable) -> Callable:

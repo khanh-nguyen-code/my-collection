@@ -3,7 +3,7 @@ import scipy as sp
 import scipy.sparse
 import scipy.sparse.linalg
 import torch
-from nn_module import Module
+from .module import Module
 from torch import nn
 
 

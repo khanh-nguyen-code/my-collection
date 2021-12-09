@@ -6,8 +6,8 @@ from PIL import Image
 from matplotlib import pyplot as plt
 from pathos.multiprocessing import ProcessPool
 
-from app.suls_example.compressed_sensing import basis
-from app.suls_example.compressed_sensing.basis.laplacian import create_grid_adj_matrix
+import basis
+from basis.laplacian import create_grid_adj_matrix
 
 """
 this example recovers an image with missing pixels
