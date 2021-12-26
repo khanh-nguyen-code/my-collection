@@ -1,6 +1,6 @@
 # my-collection 
 
-collection of libraries for python
+my collection of libraries for python
 
 # installation
 
