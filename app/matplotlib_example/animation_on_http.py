@@ -17,7 +17,7 @@ from matplotlib.lines import Line2D
 from my_collection import http
 
 fig: Optional[Figure] = None
-ctx = http.Context()
+ctx = http.Router()
 q = queue.Queue(maxsize=1)
 
 

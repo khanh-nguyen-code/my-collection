@@ -27,7 +27,7 @@ class Addr(pydantic.BaseModel):
     port: int
 
 
-ctx = http.Context()
+ctx = http.Router()
 
 
 class Server(http.Server):

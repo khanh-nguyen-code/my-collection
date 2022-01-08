@@ -11,7 +11,7 @@ class MethodConfig(pydantic.BaseModel):
     kwargs: Dict[str, Any]
 
 
-class Context:
+class Router:
     """
     description of a http server
     """

@@ -5,7 +5,7 @@ def spark_text_example(spark: pyspark.sql.SparkSession, filename: str = "text_ex
     print("### SPARK TEXT EXAMPLE ###")
 
     # DECLARE AND RUN COMPUTATION
-    rows = spark.read.text(filename).rdd
+    rows = spark.__search.text(filename).rdd
     lines = rows.map(lambda row: row.value)
     words = lines.flatMap(lambda line: line.split(" "))
     tokens = words.map(lambda word: 1)
@@ -25,7 +25,7 @@ def spark_table_example(spark: pyspark.sql.SparkSession, filename: str = "table_
 
     delimiter = ","
     # DECLARE AND RUN COMPUTATION
-    rows = spark.read \
+    rows = spark.__search \
         .option("header", True) \
         .option("inferSchema", True) \
         .option("delimiter", delimiter) \

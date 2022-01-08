@@ -20,7 +20,7 @@ class TransformRequest(pydantic.BaseModel):
     reduce_init: Any
 
 
-ctx = http.Context()
+ctx = http.Router()
 
 
 class Storage(http.Server):

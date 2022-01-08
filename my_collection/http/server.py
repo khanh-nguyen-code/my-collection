@@ -1,6 +1,6 @@
 import fastapi
 
-from my_collection.http.context import Context
+from my_collection.http.router import Router
 
 
 async def exception_handler(r: fastapi.Request, e: Exception):
@@ -22,7 +22,7 @@ class Server:
     """
     app: fastapi.FastAPI
 
-    def __init__(self, ctx: Context):
+    def __init__(self, ctx: Router):
         self.app = fastapi.FastAPI()
         self.ctx = ctx
 
