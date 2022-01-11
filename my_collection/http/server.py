@@ -22,17 +22,17 @@ class Server:
     """
     app: fastapi.FastAPI
 
-    def __init__(self, ctx: Router):
+    def __init__(self, router: Router):
         self.app = fastapi.FastAPI()
-        self.ctx = ctx
+        self.router = router
 
         self.app.exception_handler(Exception)(exception_handler)
-        for (method, path), cfg in self.ctx.method_dict.items():
-            if method == self.ctx.method_get:
+        for (method, path), cfg in self.router.method_dict.items():
+            if method == self.router.method_get:
                 self.app.get(path, *cfg.args, **cfg.kwargs)(self.__getattribute__(cfg.handler_name))
-            if method == self.ctx.method_post:
+            if method == self.router.method_post:
                 self.app.post(path, *cfg.args, **cfg.kwargs)(self.__getattribute__(cfg.handler_name))
-            if method == self.ctx.method_put:
+            if method == self.router.method_put:
                 self.app.put(path, *cfg.args, **cfg.kwargs)(self.__getattribute__(cfg.handler_name))
-            if method == self.ctx.method_delete:
+            if method == self.router.method_delete:
                 self.app.delete(path, *cfg.args, **cfg.kwargs)(self.__getattribute__(cfg.handler_name))
