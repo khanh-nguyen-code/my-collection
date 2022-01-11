@@ -10,8 +10,7 @@ import uvicorn
 
 from my_collection import http
 from my_collection.paxos.acceptor import Acceptor
-from my_collection.paxos.common import LogRequest, PrepareRequest, PrepareResponse, ProposeResponse, ProposeRequest, \
-    Value, NodeId, Request, Unmarshaller, Response, CODE_OK
+from my_collection.paxos.common import LogRequest, PrepareRequest, PrepareResponse, ProposeResponse, ProposeRequest, NodeId, Request, Unmarshaller, Response, CODE_OK
 from my_collection.paxos.learner import Learner
 from my_collection.paxos.proposer import Proposer
 
@@ -120,9 +119,9 @@ class Logger(http.Server):
         self.line += 1
         return [log.learner.committed for log in self.log]
 
-    @router.http_method(router.method_get, "/committed")
-    async def committed(self) -> Value:
-        return self.learner.committed
+    @router.http_method(router.method_get, "/read")
+    async def read(self) -> list[str]:
+        return [log.learner.committed for log in self.log]
 
 
 if __name__ == "__main__":
