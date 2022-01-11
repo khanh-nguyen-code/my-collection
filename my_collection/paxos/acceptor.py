@@ -9,7 +9,7 @@ class Acceptor:
     learner_id_list: list[NodeId]
     router: Router
     promised: ProposalId  # init {0, -1}
-    accepted: Optional[Proposal]
+    accepted: Optional[Proposal]  # write to stable storage immediately
 
     def __init__(self, node_id: NodeId, learner_id_list: list[NodeId], router: Router):
         self.node_id = node_id
