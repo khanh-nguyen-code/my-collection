@@ -38,7 +38,7 @@ class Node(http.Server):
             path += "/internal/log"
 
         async with aiohttp.ClientSession() as session:
-            async with session.post(path, data=request.dict()) as r:
+            async with session.post(path, json=request.dict()) as r:
                 if r.status != 200:
                     return None
                 if unmarshaller is None:
