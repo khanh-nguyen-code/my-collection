@@ -1,7 +1,7 @@
 from typing import Optional, Callable
 
 from my_collection.paxos.common import NodeId, ProposalId, Proposal, PrepareRequest, PrepareResponse, ProposeRequest, \
-    LogRequest, Message, ProposeResponse, Router
+    LogRequest, Request, ProposeResponse, Router, CODE_IGNORE
 
 
 class Acceptor:
@@ -20,13 +20,19 @@ class Acceptor:
 
     async def handle_prepare_request(self, request: PrepareRequest) -> Optional[PrepareResponse]:
         if request.proposal_id <= self.promised:
-            return None
+            return PrepareResponse(
+                code=CODE_IGNORE,
+                msg=f"ignore_prepare_request ({request.proposal_id} <= {self.promised})",
+            )
         self.promised = request.proposal_id
         return PrepareResponse(proposal=self.accepted)
 
     async def handle_propose_request(self, request: ProposeRequest) -> Optional[ProposeResponse]:
         if request.proposal.id < self.promised:
-            return None
+            return ProposeResponse(
+                code=CODE_IGNORE,
+                msg=f"ignore_propose_request ({request.proposal.id} <= {self.promised})",
+            )
         self.accepted = request.proposal
         log_request = LogRequest(sender=self.node_id, proposal=self.accepted)
         for learner_id in self.learner_id_list:

@@ -17,11 +17,12 @@ class Learner:
 
     async def handle_log_request(self, request: LogRequest):
         if self.committed is not None:
-            return
-        if request.proposal.value not in self.received:
+            return None
+        if request.proposal not in self.received:
             self.received[request.proposal] = set()
         self.received[request.proposal].add(request.sender)
         if not is_majority(self.num_acceptors, len(self.received[request.proposal])):
-            return
+            return None
         self.committed = request.proposal.value
         self.received = None
+        print(f"committed node_id={self.node_id} value={self.committed}")

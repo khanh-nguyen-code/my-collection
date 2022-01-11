@@ -1,7 +1,7 @@
 from typing import Optional
 
 from my_collection.paxos.common import NodeId, Router, ProposalId, Value, PrepareRequest, is_majority, PrepareResponse, \
-    Proposal, LogRequest, ProposeRequest, ProposeResponse
+    Proposal, LogRequest, ProposeRequest, ProposeResponse, CODE_OK
 
 
 class Proposer:
@@ -28,10 +28,10 @@ class Proposer:
         response_list: list[PrepareResponse] = [
             response
             for response in response_list
-            if response is not None
+            if response is not None and response.code == CODE_OK
         ]
         if not is_majority(len(self.acceptor_id_list), len(response_list)):
-            return
+            return None
         accepted_proposal_list = [
             response.proposal
             for response in response_list
@@ -42,17 +42,17 @@ class Proposer:
         else:
             proposal = Proposal(id=proposal_id, value=value)
 
+        request = ProposeRequest(proposal=proposal)
         response_list: list[ProposeResponse] = [
-            await self.router(acceptor_id, ProposeRequest(proposal=proposal), ProposeResponse.parse_obj)
+            await self.router(acceptor_id, request, ProposeResponse.parse_obj)
             for acceptor_id in self.acceptor_id_list
         ]
         response_list: list[ProposeResponse] = [
             response
             for response in response_list
-            if response is not None
+            if response is not None and response.code == CODE_OK
         ]
 
         if not is_majority(len(self.acceptor_id_list), len(response_list)):
-            return
-
+            return None
         return response_list[0].proposal.value

@@ -1,3 +1,4 @@
+import asyncio
 import threading
 from typing import Optional
 
@@ -8,7 +9,7 @@ import uvicorn as uvicorn
 from my_collection import http
 from my_collection.paxos.acceptor import Acceptor
 from my_collection.paxos.common import LogRequest, PrepareRequest, PrepareResponse, ProposeResponse, ProposeRequest, \
-    Value, NodeId, Message, Unmarshaller, ProposalId
+    Value, NodeId, Request, Unmarshaller, ProposalId, Response, CODE_OK
 from my_collection.paxos.learner import Learner
 from my_collection.paxos.proposer import Proposer
 
@@ -28,7 +29,7 @@ class Node(http.Server):
         self.acceptor = Acceptor(node_id, list(range(len(addr_list))), self.route)
         self.learner = Learner(node_id, len(addr_list))
 
-    async def route(self, node_id: NodeId, request: Message, unmarshaller: Unmarshaller) -> Optional[Message]:
+    async def route(self, node_id: NodeId, request: Request, unmarshaller: Unmarshaller) -> Optional[Response]:
         path = self.addr_list[node_id]
         if isinstance(request, PrepareRequest):
             path += "/internal/prepare"
@@ -41,12 +42,14 @@ class Node(http.Server):
             async with session.post(path, json=request.dict()) as r:
                 if r.status != 200:
                     return None
-                if unmarshaller is None:
-                    return None
                 o = await r.json()
                 if o is None:
                     return None
+                if unmarshaller is None:
+                    return None
                 response = unmarshaller(o)
+                if response.code != CODE_OK:
+                    print(response)
                 return response
 
     @router.http_method(router.method_post, "/internal/log")
@@ -63,7 +66,24 @@ class Node(http.Server):
 
     @router.http_method(router.method_post, "/propose")
     async def propose(self, value: Value = fastapi.Query(default=None)) -> Optional[Value]:
-        return await self.proposer.propose_once(value)
+        if self.learner.committed is None:
+            wait = 0.15  # s
+            max_wait = 2  # s
+            while True:
+                if self.learner.committed is not None:
+                    break
+                value = await self.proposer.propose_once(value)
+                if value is not None:
+                    self.learner.committed = value
+                    self.learner.received = None
+                    break
+                if self.learner.committed is not None:
+                    break
+                await asyncio.sleep(wait)
+                wait *= 2
+                if wait > max_wait:
+                    wait = max_wait
+        return self.learner.committed
 
     @router.http_method(router.method_get, "/committed")
     async def committed(self) -> Value:
