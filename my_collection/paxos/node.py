@@ -2,14 +2,14 @@ import asyncio
 import threading
 from typing import Optional
 
-import fastapi
 import aiohttp
+import fastapi
 import uvicorn as uvicorn
 
 from my_collection import http
 from my_collection.paxos.acceptor import Acceptor
 from my_collection.paxos.common import LogRequest, PrepareRequest, PrepareResponse, ProposeResponse, ProposeRequest, \
-    Value, NodeId, Request, Unmarshaller, ProposalId, Response, CODE_OK
+    Value, NodeId, Request, Unmarshaller, Response, CODE_OK
 from my_collection.paxos.learner import Learner
 from my_collection.paxos.proposer import Proposer
 

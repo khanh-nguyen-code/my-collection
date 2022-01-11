@@ -1,7 +1,7 @@
-from typing import Optional, Callable
+from typing import Optional
 
 from my_collection.paxos.common import NodeId, ProposalId, Proposal, PrepareRequest, PrepareResponse, ProposeRequest, \
-    LogRequest, Request, ProposeResponse, Router, CODE_IGNORE
+    LogRequest, ProposeResponse, Router, CODE_IGNORE
 
 
 class Acceptor:

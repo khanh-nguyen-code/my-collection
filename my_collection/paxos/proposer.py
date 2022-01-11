@@ -1,7 +1,7 @@
 from typing import Optional
 
 from my_collection.paxos.common import NodeId, Router, ProposalId, Value, PrepareRequest, is_majority, PrepareResponse, \
-    Proposal, LogRequest, ProposeRequest, ProposeResponse, CODE_OK
+    Proposal, ProposeRequest, ProposeResponse, CODE_OK
 
 
 class Proposer:
