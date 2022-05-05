@@ -1,6 +1,5 @@
 import os
 import pickle
-import random
 from typing import Tuple, Callable, List
 
 import numpy as np
@@ -31,46 +30,44 @@ def train(preprocess: Callable[[np.ndarray, np.ndarray], Tuple[np.ndarray, np.nd
     indices = np.random.permutation(num_samples)
     num_train_samples = int(num_samples * 0.7)
     num_test_samples = num_samples - num_train_samples
-    train_indices = [*indices[: num_train_samples]]  # create new object to shuffle
+    train_indices = indices[: num_train_samples]
     test_indices = indices[num_train_samples: num_train_samples + num_test_samples]
-    # precompute test_label
+    X_train_ = torch.from_numpy(X[train_indices])
+    y_train_ = torch.from_numpy(y[train_indices])
+    X_test_ = torch.from_numpy(X[test_indices])
+
+    # precompute label
     test_label = [y[i] for i in test_indices]
+    train_label = [y[i] for i in train_indices]
 
     def accuracy(pred: List[int], label: List[int]) -> float:
         assert len(pred) == len(label)
         correct = sum(map(lambda pair: pair[0] == pair[1], zip(pred, label)))
         return correct / len(label)
 
-    def decode(indices: List[int]) -> List[int]:
+    def decode(X_: torch.Tensor) -> List[int]:
         model.eval()
         with torch.no_grad():
-            out = []
-            for i in indices:
-                x_ = torch.from_numpy(X[i:i + 1])
-                logits = model.forward(x_).detach().cpu().numpy()
-                out.append(np.argmax(logits, axis=1)[0])
-            return out
+            logits = model.forward(X_).detach().cpu().numpy()
+            return list(np.argmax(logits, axis=1))
 
     plot = Plot("loss", "train_accuracy", "test_accuracy")
     optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4)
     for epoch in range(1000):
+
+        # train
         model.train()
-        random.shuffle(train_indices)
-        loss_v = 0.0
-        for count, i in enumerate(train_indices):
-            model.zero_grad()
-            x_ = torch.from_numpy(X[i:i + 1])
-            y_ = torch.from_numpy(y[i:i + 1])
-            out = model.forward(x_)
-            loss = nn.CrossEntropyLoss().forward(out, y_)
-            loss.backward()
-            optimizer.step()
-            loss_v += float(loss.detach().cpu().numpy())
-        loss_v /= len(train_indices)
+        model.zero_grad()
+        out = model.forward(X_train_)
+        loss = nn.CrossEntropyLoss().forward(out, y_train_)
+        loss.backward()
+        optimizer.step()
+        loss_v = float(loss.detach().cpu().numpy())
+
+        # eval
         model.eval()
-        train_label = [y[i] for i in train_indices]
-        accuracy_v_train = accuracy(decode(train_indices), train_label)
-        accuracy_v_test = accuracy(decode(test_indices), test_label)
+        accuracy_v_train = accuracy(decode(X_train_), train_label)
+        accuracy_v_test = accuracy(decode(X_test_), test_label)
         print(
             f"epoch {epoch + 1}: avg train loss {loss_v}, train accuracy {accuracy_v_train}, test accuracy {accuracy_v_test}")
         plot.insert(loss=loss_v, train_accuracy=accuracy_v_train, test_accuracy=accuracy_v_test)
